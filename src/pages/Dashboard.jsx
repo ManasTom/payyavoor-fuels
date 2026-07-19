@@ -9,6 +9,7 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [status, setStatus] = useState('Loading...');
+  const [recentLogs, setRecentLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function Dashboard() {
       const res = await api.getStatus(user.mobile);
       if (res.success) {
         setStatus(res.lastAction);
+        setRecentLogs(res.recentLogs || []);
       } else {
         setStatus('Unknown');
       }
@@ -95,6 +97,28 @@ export default function Dashboard() {
           Scan QR Code
         </Button>
       </div>
+
+      {recentLogs.length > 0 && (
+        <div className="glass-card animate-fade-in" style={{ animationDelay: '0.2s', marginTop: '1.5rem' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1rem', color: 'var(--text-secondary)' }}>Recent Activity</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {recentLogs.map((log, index) => {
+              const date = new Date(log.timestamp);
+              return (
+                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.75rem', borderBottom: index < recentLogs.length - 1 ? '1px solid var(--glass-border)' : 'none' }}>
+                  <div>
+                    <div style={{ fontWeight: '500', color: 'var(--text-primary)' }}>Clocked {log.action}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{date.toLocaleDateString()}</div>
+                  </div>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
     </div>
   );

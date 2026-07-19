@@ -317,14 +317,22 @@ function handleGetStatus(mobile) {
 
   const logsData = logsSheet.getDataRange().getValues();
   let lastAction = 'Out';
+  let recentLogs = [];
 
   for (let i = logsData.length - 1; i >= 1; i--) {
     if (String(logsData[i][1]).trim() === String(mobile).trim()) {
-      lastAction = logsData[i][3];
-      break;
+      if (recentLogs.length === 0) {
+        lastAction = logsData[i][3];
+      }
+      if (recentLogs.length < 10) {
+        recentLogs.push({
+          timestamp: logsData[i][0],
+          action: logsData[i][3]
+        });
+      }
     }
   }
-  return { success: true, lastAction: lastAction };
+  return { success: true, lastAction: lastAction, recentLogs: recentLogs };
 }
 
 function handleAttendance(mobile, explicitAction) {

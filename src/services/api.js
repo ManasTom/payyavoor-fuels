@@ -41,7 +41,8 @@ export const api = {
       return new Promise(resolve => setTimeout(() => {
         const userLogs = MOCK_DB.logs.filter(l => l.mobile === mobile);
         const lastAction = userLogs.length > 0 ? userLogs[userLogs.length - 1].action : 'Out';
-        resolve({ success: true, lastAction });
+        const recentLogs = [...userLogs].reverse().slice(0, 10);
+        resolve({ success: true, lastAction, recentLogs });
       }, 500));
     }
 
