@@ -39,13 +39,22 @@ export default function Dashboard() {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>PAYYAVOOR FUELS</h2>
-        <button 
-          onClick={handleLogout}
-          style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <LogOut size={20} />
-          <span style={{ fontSize: '0.9rem' }}>Logout</span>
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button 
+            onClick={() => navigate('/profile')}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <User size={20} />
+            <span style={{ fontSize: '0.9rem' }}>Profile</span>
+          </button>
+          <button 
+            onClick={handleLogout}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <LogOut size={20} />
+            <span style={{ fontSize: '0.9rem' }}>Logout</span>
+          </button>
+        </div>
       </div>
 
       <div className="glass-card animate-fade-in mb-6">

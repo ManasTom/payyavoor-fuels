@@ -97,5 +97,25 @@ export const api = {
       console.error('Attendance Error:', error);
       return { success: false, message: 'Network error occurred' };
     }
+  },
+
+  async updateProfile(oldMobile, password, newMobile, newPassword) {
+    if (!APPS_SCRIPT_URL) {
+      return new Promise(resolve => setTimeout(() => {
+        resolve({ success: true, message: 'Profile updated successfully (Mock)', user: { name: 'John Doe', mobile: newMobile } });
+      }, 800));
+    }
+
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'updateProfile', oldMobile, password, newMobile, newPassword })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Update Profile Error:', error);
+      return { success: false, message: 'Network error occurred' };
+    }
   }
 };

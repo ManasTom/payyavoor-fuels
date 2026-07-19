@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Scan from './pages/Scan';
+import Profile from './pages/Profile';
 import InstallPrompt from './components/InstallPrompt';
 
 const ProtectedRoute = ({ children }) => {
@@ -35,6 +36,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Scan />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } 
           />
