@@ -16,7 +16,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
   }, [user, navigate]);
 
@@ -35,7 +35,7 @@ export default function Login() {
 
     if (result.success) {
       login(result.user);
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
     } else {
       setError(result.message || 'Login failed');
     }
