@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Scan from './pages/Scan';
+import InstallPrompt from './components/InstallPrompt';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -18,6 +19,7 @@ export default function App() {
   return (
     <AuthProvider>
       <HashRouter>
+        <InstallPrompt />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route 
