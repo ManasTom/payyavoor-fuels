@@ -62,15 +62,20 @@ function setupReportsSheet() {
 
   createMonthYearSelectors(sheet);
 
+  sheet.getRange("B6").setValue("Employee:").setFontWeight("bold").setHorizontalAlignment("right");
+  const empCell = sheet.getRange("C6:E6").merge();
+  sheet.getRange("Z1").setFormula('={"All"; FILTER(Employees!A2:A, Employees!A2:A<>"")}');
+  const empRule = SpreadsheetApp.newDataValidation().requireValueInRange(sheet.getRange("Z1:Z100"), true).build();
+  empCell.setDataValidation(empRule).setBackground("#f8fafc").setBorder(true, true, true, true, false, false);
+  empCell.setValue("All");
+
   sheet.getRange("B7:E7").setBackground("#1e293b").setFontColor("#ffffff").merge();
   sheet.getRange("B7").setValue("MONTHLY ATTENDANCE SUMMARY").setFontWeight("bold").setHorizontalAlignment("center");
 
-  sheet.getRange("B8").setValue("Employee Name").setFontWeight("bold").setBackground("#f1f5f9").setBorder(true, true, true, true, false, false);
-  sheet.getRange("C8").setValue("Days Present").setFontWeight("bold").setBackground("#f1f5f9").setBorder(true, true, true, true, false, false).setHorizontalAlignment("center");
-  sheet.getRange("D8").setValue("Hours Worked").setFontWeight("bold").setBackground("#f1f5f9").setBorder(true, true, true, true, false, false).setHorizontalAlignment("center");
-  sheet.getRange("E8").setBackground("#f1f5f9").setBorder(true, true, true, true, false, false); // filler
-
-  sheet.getRange("B9").setFormula("=GET_ALL_EMPLOYEES_REPORT(C5, E5, Logs!A2:A, Employees!A2:A)");
+  sheet.getRange("B8:E8").setBackground("#f1f5f9").setFontWeight("bold").setBorder(true, true, true, true, false, false);
+  sheet.getRange("C8:D8").setHorizontalAlignment("center");
+  
+  sheet.getRange("B8").setFormula("=DYNAMIC_REPORT(C6, C5, E5, Logs!A2:A, Employees!A2:A)");
 
   sheet.setColumnWidth(2, 200);
   sheet.setColumnWidth(3, 140);
@@ -139,10 +144,30 @@ function setupPayrollSheet() {
 // ---------------------------------------------------------
 
 /**
+ * Custom function to generate a dynamic report
+ * @customfunction
+ */
+function DYNAMIC_REPORT(empName, monthName, year, logsDummy, empDummy) {
+  if (empName === "All" || !empName) {
+    const data = GET_ALL_EMPLOYEES_REPORT(monthName, year);
+    return [
+      ["Employee Name", "Days Present", "Hours Worked", ""],
+      ...data
+    ];
+  } else {
+    const data = GET_SINGLE_EMPLOYEE_REPORT(empName, monthName, year);
+    return [
+      ["Date", "Clock In", "Clock Out", "Hours Worked"],
+      ...data
+    ];
+  }
+}
+
+/**
  * Custom function to generate a report of all employees
  * @customfunction
  */
-function GET_ALL_EMPLOYEES_REPORT(monthName, year, logsDummy, empDummy) {
+function GET_ALL_EMPLOYEES_REPORT(monthName, year) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const empSheet = ss.getSheetByName(EMPLOYEES_SHEET_NAME);
   if (!empSheet) return [["No data", "", ""]];
@@ -163,7 +188,51 @@ function GET_ALL_EMPLOYEES_REPORT(monthName, year, logsDummy, empDummy) {
     }
   });
 
-  if (report.length === 0) return [["No employees found", "", ""]];
+  if (report.length === 0) return [["No employees found", "", "", ""]];
+  return report;
+}
+
+/**
+ * Custom function to generate a detailed report for a single employee
+ * @customfunction
+ */
+function GET_SINGLE_EMPLOYEE_REPORT(empName, monthName, year) {
+  const data = getFilteredLogs(empName, monthName, year);
+  data.sort((a, b) => new Date(a[0]) - new Date(b[0]));
+  
+  let report = [];
+  let inTime = null;
+  let lastDateStr = null;
+  const timeZone = Session.getScriptTimeZone();
+  
+  for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    const timestamp = new Date(row[0]);
+    const action = row[3]; 
+    
+    if (action === 'In') {
+      inTime = timestamp;
+    } else if (action === 'Out' && inTime) {
+      const hours = Math.round(((timestamp - inTime) / (1000 * 60 * 60)) * 100) / 100;
+      const dateStr = Utilities.formatDate(inTime, timeZone, "yyyy-MM-dd");
+      const displayDate = (dateStr === lastDateStr) ? "" : dateStr;
+      
+      const inStr = Utilities.formatDate(inTime, timeZone, "hh:mm a");
+      const outStr = Utilities.formatDate(timestamp, timeZone, "hh:mm a");
+      report.push([displayDate, inStr, outStr, hours]);
+      inTime = null;
+      lastDateStr = dateStr;
+    }
+  }
+  
+  if (inTime) {
+      const dateStr = Utilities.formatDate(inTime, timeZone, "yyyy-MM-dd");
+      const displayDate = (dateStr === lastDateStr) ? "" : dateStr;
+      const inStr = Utilities.formatDate(inTime, timeZone, "hh:mm a");
+      report.push([displayDate, inStr, "Working...", ""]);
+  }
+
+  if (report.length === 0) return [["No records found", "", "", ""]];
   return report;
 }
 
