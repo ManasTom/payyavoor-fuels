@@ -11,7 +11,7 @@ export default defineConfig({
       includeAssets: ['icon.png'],
       manifest: {
         name: 'PAYYAVOOR FUELS',
-        short_name: 'PAYYAVOOR',
+        short_name: 'PAYYAVOOR FUELS',
         description: 'Employee Attendance Portal for Payyavoor Fuels',
         theme_color: '#0f172a',
         background_color: '#0f172a',
