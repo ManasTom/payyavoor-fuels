@@ -1,5 +1,5 @@
 // Replace with your Google Apps Script Web App URL after deployment
-export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKtuepeuh4C0B9AlYisAMhYjENe0v42qnX_FS9wlOMVsbU5KVrcQUlgR9ukpFnTujFxg/exec';
+export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbya2O1rehmHUqZJvxI-RaDxmASx-06W7ebOC_9gBnsEIJW6rTpGOVlmU-cec2iTBYWF/exec';
 
 // Mock Database for local testing if no URL is provided
 const MOCK_DB = {
